@@ -2,7 +2,7 @@
 from fastapi import FastAPI, HTTPException, Request
 from .database import engine
 from . import models
-from .routers import auth, users, books, reviews, carts, orders, wishlists, likes
+from .routers import auth, users, books, reviews, carts, orders, wishlists, likes, stats
 from .exceptions import global_exception_handler, custom_exception_handler, CustomException
 from starlette.middleware.base import BaseHTTPMiddleware
 import time
@@ -37,6 +37,8 @@ app.include_router(carts.router, tags=["Cart (장바구니)"])
 app.include_router(orders.router, tags=["Orders (주문)"])
 app.include_router(wishlists.router, tags=["Wishlists (위시리스트)"])
 app.include_router(likes.router, tags=["Likes (좋아요)"])
+app.include_router(stats.router, tags=["Stats (통계)"])
+
 @app.get("/health", tags=["System"])
 def health_check(db: Session = Depends(get_db)):
     try:
