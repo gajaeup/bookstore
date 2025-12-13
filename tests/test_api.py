@@ -42,6 +42,15 @@ def test_signup():
     })
     assert response.status_code in [200, 400, 409]
 
+def test_validation_error():
+    # 이메일 형식이 아닌 데이터로 회원가입 시도
+    response = client.post("/api/signup", json={
+        "email": "not-an-email", 
+        "password": "pwd",
+        "username": "User"
+    })
+    assert response.status_code == 422
+
 # 3. 로그인 성공
 def test_login_success():
     response = client.post("/api/auth/login", json={
@@ -59,6 +68,13 @@ def test_login_fail_password():
     })
     # 우리 서버는 401 에러를 리턴해야 함
     assert response.status_code == 401
+
+# 5. 로그아웃
+def test_logout():
+    headers = get_auth_headers()
+    if headers:
+        response = client.post("/api/auth/logout", headers=headers)
+        assert response.status_code == 200
 
 # 5. 내 정보 조회 (인증 필요)
 def test_get_me():

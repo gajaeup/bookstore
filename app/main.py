@@ -3,7 +3,8 @@ from fastapi import FastAPI, HTTPException, Request
 from .database import engine
 from . import models
 from .routers import auth, users, books, reviews, carts, orders, wishlists, likes, stats
-from .exceptions import global_exception_handler, custom_exception_handler, CustomException
+from .exceptions import global_exception_handler, custom_exception_handler, CustomException, validation_exception_handler, python_exception_handler
+from fastapi.exceptions import RequestValidationError
 from starlette.middleware.base import BaseHTTPMiddleware
 import time
 import logging
@@ -15,6 +16,7 @@ from app.database import get_db
 from sqlalchemy import text
 from fastapi import Depends
 from app.error_codes import ErrorCode
+from datetime import datetime
 # 서버 시작 시 DB 테이블 자동 생성 (마이그레이션 도구 없이 초기 개발용)
 models.Base.metadata.create_all(bind=engine)
 limiter = Limiter(key_func=get_remote_address)
@@ -28,6 +30,8 @@ app.state.limiter = limiter
 app.add_exception_handler(HTTPException, global_exception_handler)
 app.add_exception_handler(CustomException, custom_exception_handler)
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(Exception, python_exception_handler)
 
 app.include_router(auth.router, tags=["Auth (회원가입 / 로그인 / 로그아웃 / 토큰 재발급)"])
 app.include_router(users.router, tags=["Users (사용자 관리)"])
@@ -40,13 +44,13 @@ app.include_router(likes.router, tags=["Likes (좋아요)"])
 app.include_router(stats.router, tags=["Stats (통계)"])
 
 @app.get("/health", tags=["System"])
-def health_check(db: Session = Depends(get_db)):
-    try:
-        db.execute(text("SELECT 1"))
-    except Exception:
-        raise CustomException(ErrorCode.DB_CONNECTION_ERROR)
-    return {"status": "ok", "message": "Server is running"}
-
+def health_check():
+    return {
+        "status": "ok",
+        "version": "1.0.0",
+        "build_timestamp": datetime.now().isoformat(), # 실제로는 배포 시점 시간이어야 하나, 현재 시간으로 대체
+        "maintainer": "Your Name"
+    }
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 

@@ -1,4 +1,4 @@
-# app/error_codes.py (새로 생성)
+
 
 class ErrorCode:
     # 400 Bad Request
