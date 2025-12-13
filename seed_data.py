@@ -32,7 +32,6 @@ def init_db():
 
         # 2. 도서 200권 생성
         print("📚 도서 생성 중...")
-        categories = ["IT", "소설", "에세이", "경제", "역사"]
         # 도서가 비어있을 때만 넣기 (선택사항)
         if db.query(Book).count() == 0:
             for i in range(200):
@@ -42,7 +41,6 @@ def init_db():
                     publisher=f"출판사 {i}",
                     price=random.randint(10000, 50000),
                     summary=f"이 책은 {i}번째 테스트 도서입니다.",
-                    view_count=random.randint(0, 1000)
                 )
                 db.add(book)
             db.commit()
