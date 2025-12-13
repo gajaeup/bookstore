@@ -44,11 +44,19 @@ app.include_router(likes.router, tags=["Likes (좋아요)"])
 app.include_router(stats.router, tags=["Stats (통계)"])
 
 @app.get("/health", tags=["System"])
-def health_check():
+def health_check(db: Session = Depends(get_db)):
+    try:
+        db.execute(text("SELECT 1"))
+        db_status = "connected"
+    except Exception as e:
+        db_status = "disconnected"
+        logger.error(f"Health Check DB Error: {str(e)}")
+
     return {
         "status": "ok",
+        "db_status": db_status,  # DB 상태 추가
         "version": "1.0.0",
-        "build_timestamp": datetime.now().isoformat(), # 실제로는 배포 시점 시간이어야 하나, 현재 시간으로 대체
+        "build_timestamp": datetime.now().isoformat(),
         "maintainer": "Your Name"
     }
 logging.basicConfig(level=logging.INFO)
