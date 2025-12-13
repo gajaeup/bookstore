@@ -40,7 +40,6 @@ def init_db():
                     title=f"테스트 도서 {i}",
                     author=f"저자 {i}",
                     publisher=f"출판사 {i}",
-                    category=random.choice(categories),
                     price=random.randint(10000, 50000),
                     summary=f"이 책은 {i}번째 테스트 도서입니다.",
                     view_count=random.randint(0, 1000)
