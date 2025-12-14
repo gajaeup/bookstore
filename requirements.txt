@@ -3,6 +3,11 @@ uvicorn
 sqlalchemy
 pymysql
 python-dotenv
-passlib[bcrypt]
+passlib
+bcrypt==4.0.1
 python-multipart
 pyjwt
+slowapi
+pytest
+httpx
+email-validator
